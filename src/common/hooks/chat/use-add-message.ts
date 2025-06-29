@@ -10,17 +10,6 @@ export const ADD_MESSAGE: TypedDocumentNode<
   }
 `;
 
-interface AddMessageVars {
-  addMessageInput: {
-    chatId: number;
-    content: string;
-  };
-}
-
-interface AddMessageResult {
-  addMessage: number;
-}
-
 export const useAddMessage = () => {
   const toastId = "add-message-toast";
   const [addMessage, mutation] = useMutation<AddMessageResult, AddMessageVars>(
@@ -40,3 +29,14 @@ export const useAddMessage = () => {
     ...mutation,
   };
 };
+
+interface AddMessageVars {
+  addMessageInput: {
+    chatId: number;
+    content: string;
+  };
+}
+
+interface AddMessageResult {
+  addMessage: number;
+}

@@ -1,10 +1,11 @@
 "use client";
 
-import { gql, useQuery, useSubscription } from "@apollo/client";
-import { Message } from "../../interfaces/chat";
-import { useEffect, useState } from "react";
+import { gql, TypedDocumentNode, useQuery } from "@apollo/client";
+import { useEffect } from "react";
+import { Message } from "@/common/interfaces/chat";
+import { User } from "@/common/interfaces/user";
 
-const GET_CHAT_MESSAGES = gql`
+const GET_CHAT_MESSAGES: GetChatMessages = gql`
   query ChatMessages($chatId: Int!) {
     chatMessages(chatId: $chatId) {
       id
@@ -18,7 +19,7 @@ const GET_CHAT_MESSAGES = gql`
   }
 `;
 
-const MESSAGE_ADDED_SUBSCRIPTION = gql`
+const MESSAGE_ADDED_SUBSCRIPTION: MessageAddedSubscriptionResult = gql`
   subscription MessageAdded($chatId: Int!) {
     messageAdded(chatId: $chatId) {
       id
@@ -26,6 +27,7 @@ const MESSAGE_ADDED_SUBSCRIPTION = gql`
       createdAt
       author {
         id
+        email
       }
     }
   }
@@ -35,7 +37,6 @@ export const useChatMessages = (chatId: string) => {
   // Pobierz historię wiadomości
   const { subscribeToMore, ...result } = useQuery(GET_CHAT_MESSAGES, {
     variables: { chatId: parseInt(chatId) },
-    skip: !chatId,
   });
 
   useEffect(() => {
@@ -61,26 +62,18 @@ export const useChatMessages = (chatId: string) => {
     };
   }, [result.data, chatId, subscribeToMore]);
 
-  // Subskrybuj nowe wiadomości
-  // const { data: subData } = useSubscription(MESSAGE_ADDED_SUBSCRIPTION, {
-  //   variables: { chatId: parseInt(chatId) },
-  //   skip: !chatId,
-  // });
-
-  // // Aktualizuj listę wiadomości gdy przychodzą początkowe dane
-  // useEffect(() => {
-  //   if (data?.chatMessages) {
-  //     setMessages(data.chatMessages);
-  //   }
-  // }, [data]);
-
-  // // Dodaj nową wiadomość gdy przychodzi przez subskrypcję
-  // useEffect(() => {
-  //   if (subData?.messageAdded) {
-  //     setMessages((prev) => [...prev, subData.messageAdded]);
-  //   }
-  // }, [subData]);
-
-  // return { messages, loading, error };
-  return result;
+  return { ...result, messages: result.data?.chatMessages };
 };
+
+interface GetChatMessagesResult
+  extends Pick<Message, "id" | "content" | "createdAt"> {
+  author: User;
+}
+
+type GetChatMessages = TypedDocumentNode<{
+  chatMessages: GetChatMessagesResult[];
+}>;
+
+type MessageAddedSubscriptionResult = TypedDocumentNode<{
+  messageAdded: GetChatMessagesResult;
+}>;

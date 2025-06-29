@@ -12,10 +12,6 @@ export const GET_USER_CHATS: TypedDocumentNode<GetUserChatsResult> = gql`
   }
 `;
 
-interface GetUserChatsResult {
-  chats: Pick<Chat, "id" | "createdAt" | "name">[];
-}
-
 export const useUserChats = () => {
   const toastId = "chats-toast";
   const query = useQuery<GetUserChatsResult>(GET_USER_CHATS, {
@@ -32,3 +28,7 @@ export const useUserChats = () => {
     ...query,
   };
 };
+
+interface GetUserChatsResult {
+  chats: Pick<Chat, "id" | "createdAt" | "name">[];
+}

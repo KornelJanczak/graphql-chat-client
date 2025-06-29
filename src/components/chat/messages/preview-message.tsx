@@ -2,33 +2,42 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { Message } from "@/common/interfaces/chat";
+import { MessageWithAuthor } from "@/common/interfaces/chat";
+import { useAuthContext } from "@/common/providers/auth-provider";
 
 interface PreviewMessageProps {
-  message: Message;
+  message: MessageWithAuthor;
 }
 
 export const PreviewMessage = ({ message }: PreviewMessageProps) => {
+  const { user } = useAuthContext();
+  const isMyMessage = user?.id === message.author.id;
+
   return (
     <AnimatePresence>
       <motion.div
-        className="w-full mx-auto max-w-4xl px-4 group/message"
+        className={cn(
+          "w-full mx-auto max-w-4xl px-4 group/message flex",
+          isMyMessage ? "justify-end" : "justify-start"
+        )}
         initial={{ y: 5, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
       >
-        <div
-          className={cn(
-            "flex gap-4 w-full group-data-[role=user]/message:ml-auto group-data-[role=user]/message:max-w-2xl",
-            "group-data-[role=user]/message:w-fit"
-          )}
-        >
+        <div className="flex gap-4">
           <div className="flex flex-col gap-2 w-full">
+            {!isMyMessage && (
+              <span className="text-xs text-muted-foreground mb-1 block">
+                {message.author.email}
+              </span>
+            )}
             {message.content && (
               <div className="flex flex-row gap-2 items-start">
                 <div
                   className={cn(
-                    "flex flex-col gap-4",
-                    "bg-primary text-primary-foreground px-3 py-2 rounded-xl"
+                    "flex flex-col gap-4 px-3 py-2 rounded-xl",
+                    isMyMessage
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-foreground"
                   )}
                 >
                   <span>{message.content as string}</span>

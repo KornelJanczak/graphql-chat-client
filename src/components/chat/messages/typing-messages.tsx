@@ -1,13 +1,12 @@
-import { PreviewMessage } from "./preview-message";
 import { useScrollToBottom } from "@/common/hooks/_shared/use-scroll-to-bottom";
-import { MessageWithAuthor } from "@/common/interfaces/chat";
+import { TypingUser } from "@/common/interfaces/chat";
+import { TypingMessage } from "./typing-message";
 
-export interface MessagesProps {
-  messages: Array<MessageWithAuthor>;
+export interface TypingMessagesProps {
+  typingUsers: TypingUser[];
 }
 
-export function Messages({ messages }: MessagesProps) {
-  const messagesExist = messages.length > 0;
+export function TypingMesseges({ typingUsers }: TypingMessagesProps) {
   const [messagesContainerRef, messagesEndRef] =
     useScrollToBottom<HTMLDivElement>();
 
@@ -16,8 +15,8 @@ export function Messages({ messages }: MessagesProps) {
       ref={messagesContainerRef}
       className="flex flex-col min-w-0 gap-6 flex-1 overflow-y-scroll pt-4"
     >
-      {messages.map((message) => (
-        <PreviewMessage key={message.id} message={message} />
+      {typingUsers.map(({ author }) => (
+        <TypingMessage key={author.id} author={author} />
       ))}
 
       <div

@@ -11,5 +11,18 @@ export interface Chat {
 export interface Message {
   id: string;
   content: string;
-  sender: string;
+  createdAt: string;
+}
+
+export interface MessageWithAuthor extends Message {
+  author: User;
+}
+
+export interface TypingUser {
+  chatId: number;
+  typing: boolean;
+  author: {
+    id: number;
+    email: string;
+  };
 }

@@ -10,6 +10,13 @@ import {
 import { GraphQLWsLink } from "@apollo/client/link/subscriptions";
 import { createClient } from "graphql-ws";
 import { getMainDefinition } from "@apollo/client/utilities";
+import { loadErrorMessages, loadDevMessages } from "@apollo/client/dev";
+
+if ([process.env.NODE_ENV, "development"].includes("development")) {
+  // Adds messages only in a dev environment
+  loadDevMessages();
+  loadErrorMessages();
+}
 
 const httpLink = new HttpLink({
   uri: "http://localhost:5021/graphql",
